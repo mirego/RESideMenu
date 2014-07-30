@@ -162,6 +162,46 @@
     }
 }
 
+- (void)presentLeftMenuViewControllerWithCustomAnimation:(MenuAnimationBlock)customAnimation duration:(NSTimeInterval)duration options:(UIViewAnimationOptions)options initialSetup:(MenuAnimationBlock)initialSetup completion:(MenuAnimationBlock)completion {
+
+    if ([self.delegate conformsToProtocol:@protocol(RESideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:willShowMenuViewController:)]) {
+        [self.delegate sideMenu:self willShowMenuViewController:self.leftMenuViewController];
+    }
+
+    if (!self.leftMenuViewController) {
+        return;
+    }
+    self.leftMenuViewController.view.hidden = NO;
+    self.rightMenuViewController.view.hidden = YES;
+    [self.view.window endEditing:YES];
+    [self __addContentButton];
+    [self __updateContentViewShadow];
+
+    if (initialSetup) {
+        initialSetup(self.menuViewContainer, self.contentViewContainer, self.view);
+    }
+
+    if (customAnimation) {
+        [UIView animateWithDuration:duration delay:0 options:options animations:^{
+            customAnimation(self.menuViewContainer, self.contentViewContainer, self.view);
+        } completion:^(BOOL finished) {
+
+            [self __addContentViewControllerMotionEffects];
+
+            if (!self.visible && [self.delegate conformsToProtocol:@protocol(RESideMenuDelegate)] && [self.delegate respondsToSelector:@selector(sideMenu:didShowMenuViewController:)]) {
+                [self.delegate sideMenu:self didShowMenuViewController:self.leftMenuViewController];
+            }
+
+            self.visible = YES;
+            self.leftMenuVisible = YES;
+
+            if (completion) {
+                completion(self.menuViewContainer, self.contentViewContainer, self.view);
+            }
+        }];
+    }
+}
+
 #pragma mark View life cycle
 
 - (void)viewDidLoad

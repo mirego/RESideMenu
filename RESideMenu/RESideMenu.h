@@ -26,6 +26,8 @@
 #import <UIKit/UIKit.h>
 #import "UIViewController+RESideMenu.h"
 
+typedef void (^MenuAnimationBlock)(UIView *menuView, UIView *contentView, UIView *animationContainerView);
+
 @protocol RESideMenuDelegate;
 
 @interface RESideMenu : UIViewController <UIGestureRecognizerDelegate>
@@ -69,6 +71,11 @@
 - (void)presentRightMenuViewController;
 - (void)hideMenuViewController;
 - (void)setContentViewController:(UIViewController *)contentViewController animated:(BOOL)animated;
+- (void)presentLeftMenuViewControllerWithCustomAnimation:(MenuAnimationBlock)customAnimation
+                                                duration:(NSTimeInterval)duration
+                                                 options:(UIViewAnimationOptions)options
+                                            initialSetup:(MenuAnimationBlock)initialSetup
+                                              completion:(MenuAnimationBlock)completion;
 
 @end
 
